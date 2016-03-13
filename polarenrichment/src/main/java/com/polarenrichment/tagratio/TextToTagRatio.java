@@ -1,3 +1,5 @@
+package com.polarenrichment.tagratio;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -17,12 +19,11 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
 class TTR {
-
+	
 	private double[] linkTagList;
+	public Object outputDirPath;
 	private static ArrayList<String> arrList = new ArrayList<String>(); 
-	public String outputDirPath = "";
-    
-
+	
 	public double[] parseFile(String html,String filepath) {
 		
 		html = html.replaceAll("(?s)<!--.*?-->", "");
@@ -43,7 +44,7 @@ class TTR {
 			
 			Parser p = new Parser(html);
 			NodeList nl = p.parse(null);
-			NodeList list = nl.extractAllNodesThatMatch(new TagNameFilter("TITLE"), true);
+			//NodeList list = nl.extractAllNodesThatMatch(new TagNameFilter("TITLE"), true);
 		
 			BufferedReader br = new BufferedReader(new StringReader(nl.toHtml()));
 			int numLines = 0;
@@ -53,7 +54,7 @@ class TTR {
 			br.close();
 
 			if (numLines == 0) {
-				return linkTagList;
+				return linkTagList;				
 			}
 
 
@@ -75,6 +76,7 @@ class TTR {
 				bw.newLine();
 				}
 			}
+			
 			br.close();
 			bw.close();
 		}catch (MalformedURLException e) {
@@ -88,21 +90,26 @@ class TTR {
 		return linkTagList;
 	}
 
+	/**
+	 * Calculate Text to Tag Ratio for line
+	 * @param line
+	 * @return
+	 */
 	private double computeTextToTagRatio(String line) {
 		int tag = 0;
 		int text = 0;
 
 		for (int i = 0; i >= 0 && i < line.length(); i++) {
-			if (line.charAt(i) == '<') {
+			if (line.charAt(i) == '<') {	//start tag
 				tag++;
 				i = line.indexOf('>', i);
 				if (i == -1) {
 					break;
 				}
-			} else if (tag == 0 && line.charAt(i) == '>') {
+			} else if (tag == 0 && line.charAt(i) == '>') {	//close tag
 				text = 0;
 				tag++;
-			} else {
+			} else {		//just text
 				text++;
 			}
 
@@ -116,7 +123,12 @@ class TTR {
 		return (double) text / (double) tag;
 	}
 	
-	public static ArrayList walk(String path) {
+	/**
+	 * Take input XHTML file path and add Absolute File Path to a List
+	 * @param path
+	 * @return list
+	 */
+	public static ArrayList<String> walk(String path) {
 
 		File root = new File(path);
         File[] list = root.listFiles();
@@ -125,8 +137,7 @@ class TTR {
         for (File f : list) {
             if (f.isDirectory()) {
                 walk(f.getAbsolutePath());
-            }
-            else {
+            } else {
             	if(f.toString().toLowerCase().endsWith(".xhtml")){
             		
                 //System.out.println( "File:" + f.getAbsoluteFile());
@@ -139,21 +150,25 @@ class TTR {
 
 }
 
-public class Text_To_Tag_Ratio{
-	public static void main(String[] args){
+public class TextToTagRatio {
+	
+	private static String inputDirPath = "D:\\599test\\input";
+	private static String outputDirPath = "D:\\599test\\output";
+	
+	public static void main(String[] args) {
 		TTR ttr = new TTR();
 		
 		ArrayList<String> arrList = null;
-		arrList = TTR.walk(args[0]);	//Input Directory Path
-		ttr.outputDirPath = args[1];	// Output Directory Path
-		if(arrList!=null){
-			for(String filePath : arrList){
+		arrList = TTR.walk(inputDirPath);	//Input Directory Path
+		ttr.outputDirPath = outputDirPath;	// Output Directory Path
+		
+		if(arrList != null && !arrList.isEmpty()) {
+			for(String filePath : arrList) {
 					
 					BufferedReader br = null;
 					try {
 						br = new BufferedReader(new FileReader(filePath));
-					} 
-					catch (FileNotFoundException e) {
+					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					}
 					
@@ -164,15 +179,16 @@ public class Text_To_Tag_Ratio{
 							lines+=line;
 							lines+="\n";
 						 }
-						//System.out.println(lines);
+						System.out.println(lines);
 						ttr.parseFile(lines,filePath);
 					} 
 					catch (IOException e) {
 						e.printStackTrace();
-					}
-			
+					}			
 			}
 		}
 	}
+	
+	
 }
 
