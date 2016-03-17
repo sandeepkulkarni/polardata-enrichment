@@ -14,38 +14,18 @@ import org.xml.sax.SAXException;
 
 public class TikaUtil {
 
-	private static String filePath = "D:\\599test\\input\\2";
-	
-	public String parseToHTML() throws IOException, SAXException, TikaException {
-	    ContentHandler handler = new ToXMLContentHandler();
-		//BodyContentHandler handler = new BodyContentHandler();
-	 
-	    InputStream inputStream = new FileInputStream(new File(filePath));
-	    //File file = new File(filePath);
-	    
-	    AutoDetectParser parser = new AutoDetectParser();
-	    Metadata metadata = new Metadata();
-	    
-	    try (InputStream stream = inputStream) {
-	        parser.parse(stream, handler, metadata);
-	        return handler.toString();
-	    }	    
-	}
-	
-	public static void main(String[] args) {
-		
-		TikaUtil tikaUtil = new TikaUtil();
-		try {
-			String output = tikaUtil.parseToHTML();
-			System.out.println(output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (TikaException e) {
-			e.printStackTrace();
-		}
+	public String parseToHTML(String filePath) throws IOException, SAXException, TikaException {
+		ContentHandler handler = new ToXMLContentHandler();
 
+		InputStream inputStream = new FileInputStream(new File(filePath));
+
+		AutoDetectParser parser = new AutoDetectParser();
+		Metadata metadata = new Metadata();
+
+		try (InputStream stream = inputStream) {
+			parser.parse(stream, handler, metadata);
+			return handler.toString();
+		}	    
 	}
 
 }
