@@ -1,0 +1,11 @@
+\d+	MEASUREMENT NUMBER	MEASUREMENT
+(?i)(\u00B0|degree|deg) (?i)(C|F|K|N|R|m|cm|mm|kg|s|Pa|J|W|g|Hz|ft|L|Celsius|Kelvin|Farenheit|meter|centi|milli|cubic|pascal|joule|watt|gram|kilo|hertz|newton|feet|liter|nano)	UNIT	MEASUREMENT
+\d+ (?i)(\u00B0|degree|deg)? (?i)(C|F|K|N|R|Celsius|Kelvin|Farenheit)	MEASUREMENT
+\d+(?i)(C|F|K|N|R|m|km|cm|mm|kg|s|Pa|J|W|g|Hz|ft|L|mg|sec)	MEASUREMENT
+\d+ (?i)(Celsius|Kelvin|Farenheit|meter|centi|milli|cubic|pascal|joule|watt|gram|kilo|hertz|newton|feet|liter|nano|sec|days|hours|minutes)	MEASUREMENT
+(?i)(Math|Space|Science|Date|Time)	REPRESENTATION
+(?i)(Earth|Atmosphere|Cryosphere|Geosphere|Heliosphere|Hydrosphere|Land|Ocean) 	REALM	ORGANIZATION
+(?i)(Physical|Mathematical|Chemical|Biological)	PROCESS
+(?i)(Ecological|Physical|Atmospheric)	PHENOMENA
+(?i)(Decision|Jurisdiction|Commerce|Research|Environmental)	HUMAN ACTIVITIES
+(?i)(Living|Material)	MATTER
