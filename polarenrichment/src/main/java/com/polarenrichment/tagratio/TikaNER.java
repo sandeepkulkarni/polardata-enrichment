@@ -7,10 +7,6 @@ import org.apache.tika.parser.ner.NamedEntityParser;
 import org.apache.tika.parser.ner.corenlp.CoreNLPNERecogniser;
 import org.junit.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -24,14 +20,11 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import static org.junit.Assert.assertTrue;
 
-/**
- * A test case for NamedEntityParser with CoreNLP recogniser
- */
 public class TikaNER {
 
     public static final String CONFIG_FILE = "tika-config.xml";
+
     @Test
     public void extractTikaNER() throws Exception {
         System.setProperty(NamedEntityParser.SYS_PROP_NER_IMPL,CoreNLPNERecogniser.class.getName());
@@ -41,29 +34,27 @@ public class TikaNER {
 
         JSONParser parser = new JSONParser();
         String text="";
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         
         HashMap<Integer,String> hmap = new HashMap<Integer,String>();
         HashMap<String,HashMap<Integer,String>> outerhmap = new HashMap<String,HashMap<Integer,String>>();
         
         int index=0;
-        
+        //Input Directory Path
         String inputDirPath = "/Users/AravindMac/Desktop/samplejson";
         
         try {
  
         	File root = new File(inputDirPath);
-        	//System.out.println(root);
-            
         	File[] listDir = root.listFiles();
-        	
-	        	for(File filename : listDir){
+            for(File filename : listDir){
 	        		
-	        		if(!filename.getName().equals(".DS_Store")){
+	        	if(!filename.getName().equals(".DS_Store")){
 	        			
 	        		String absoluteFilename = filename.getAbsolutePath().toString();
 	        		
 	        		System.out.println(absoluteFilename);
+	        		 //Read the json file, parse and retrieve the text present in the content field.
+		        	   
 		            Object obj = parser.parse(new FileReader(absoluteFilename));
 		            
 		            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(absoluteFilename)));
@@ -74,10 +65,11 @@ public class TikaNER {
 		            Metadata md = new Metadata();
 		            tika.parse(new ByteArrayInputStream(text.getBytes()), md);
 		            
+		            //Parse the content and retrieve the values tagged as the NER entities
 		            HashSet<String> set = new HashSet<String>();
 		            set.addAll(Arrays.asList(md.getValues("X-Parsed-By")));
 		            
-		            // NER_PERSON
+		            // Store values tagged as NER_PERSON
 		            set.clear();
 		            set.addAll(Arrays.asList(md.getValues("NER_PERSON")));
 		            
@@ -94,7 +86,7 @@ public class TikaNER {
 		            	outerhmap.put("PERSON", hmap);
 		            }
 		            
-		            // NER_LOCATION
+		            // Store values tagged as NER_LOCATION
 		            set.clear();
 		            set.addAll(Arrays.asList(md.getValues("NER_LOCATION")));
 		            hmap = new HashMap<Integer,String>();
@@ -110,7 +102,7 @@ public class TikaNER {
 		            	outerhmap.put("LOCATION", hmap);	
 		            }
 		            
-		            // NER_ORGANIZATION
+		            //Store values tagged as NER_ORGANIZATION
 		            set.clear();
 		            set.addAll(Arrays.asList(md.getValues("NER_ORGANIZATION")));
 		            
@@ -127,7 +119,7 @@ public class TikaNER {
 		            	outerhmap.put("ORGANIZATION", hmap);
 		            }
 		            
-		            // NER_DATE
+		            // Store values tagged as NER_DATE
 		            set.clear();
 		            set.addAll(Arrays.asList(md.getValues("NER_DATE")));
 		            
@@ -146,14 +138,11 @@ public class TikaNER {
 		            
 		            JSONArray array = new JSONArray();
 					array.put(outerhmap);
-					jsonObject.put("NER", array);
+					jsonObject.put("NER", array);		//Add the NER entities to the json under NER key as a JSON array.
 					
-		            //String jsonOutput = gson.toJson(jsonObject);
-		            //hmap = (HashMap)jsonObject.get("NER_DATE");
 		            System.out.println(jsonObject);
 		            
-		            //System.out.println(jsonObject.toJSONString());
-		            bw.write(jsonObject.toJSONString());
+		            bw.write(jsonObject.toJSONString());	//Stringify thr JSON and write it back to the file 
 		            bw.close();
 		            
 	        		}
@@ -161,5 +150,5 @@ public class TikaNER {
         	} catch (Exception e) {
         			e.printStackTrace();
         		}
-      }
+      	}
 }
