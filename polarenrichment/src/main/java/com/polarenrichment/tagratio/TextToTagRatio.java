@@ -197,12 +197,14 @@ class TTR {
 
 public class TextToTagRatio {
 
-	private static String inputDirPath = "D:\\599test\\input";		//"F:\\polardata_chosen\\";
-	private static String outputDirPath = "D:\\599test\\output";	//"F:\\polardata_json\\";
+	private static String inputDirPath; 
+	private static String outputDirPath;
 	
 	public static void main(String[] args) {
 		TTR ttr = new TTR();		
 		TikaUtil tikaUtil = new TikaUtil();
+		TextToTagRatio.inputDirPath = args[0];
+		TextToTagRatio.outputDirPath = args[1];
 		ttr.outputDirPath = outputDirPath;
 
 		//Fetch a polar data file, get xhtml from tika and write to output dir

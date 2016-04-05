@@ -12,14 +12,17 @@ import org.apache.tika.sax.ToXMLContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+//Tika Utility to invoke Tika AutoDetect Parser
+
 public class TikaUtil {
 
+	//Parse the contents of the file as input to an intermediate XHTML file 
 	public String parseToHTML(String filePath) throws IOException, SAXException, TikaException {
 		ContentHandler handler = new ToXMLContentHandler();
 
 		InputStream inputStream = new FileInputStream(new File(filePath));
 
-		AutoDetectParser parser = new AutoDetectParser();
+		AutoDetectParser parser = new AutoDetectParser();	//Invoke Tika's AutoDetect Parser
 		Metadata metadata = new Metadata();
 
 		try (InputStream stream = inputStream) {
