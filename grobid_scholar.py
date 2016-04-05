@@ -64,7 +64,6 @@ for root, subFolders, files in os.walk(rootdir):
                                 except:
                                     scholarAuthors.append("")
                                 scholarAuthors[authorNumber]+=authorNamePart+" "
-                        print(scholarAuthors)
                         scholaroutput={}
                         #add scholar info to the json
                         with open("output.json", "w+") as output:

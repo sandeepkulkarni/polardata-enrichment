@@ -57,6 +57,7 @@ for root, subFolders, files in os.walk(rootdir):
                         parsed["geo_lat"]=geo_lat
                         parsed["geo_long"]=geo_long
 
+                        #print back to json file
                         temp.seek(0,0)
                         json.dump(parsed,temp)
                         temp.close()

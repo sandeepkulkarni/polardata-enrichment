@@ -3,13 +3,14 @@ import json
 import solr
 import yourls.client
 import traceback
+import re
 import os
 import fnmatch
 
 
 #Directory where the json files are stored
 rootdir="/Users/rrgirish/Downloads/polardata_json"
-
+#rootdir="/Users/rrgirish/Downloads/polardata_json_grobid"
 
 # files = [f for f in listdir(rootdir) if isfile(join(rootdir, f))]
 files = []
@@ -42,6 +43,7 @@ for file in files:
             Geographical_Latitude="-9999"
             Representation="N/A"
             Realm="N/A"
+            MeasurementsUnits="N/A"
             Matter="N/A"
             HumanActivities="N/A"
             Phenomena="N/A"
@@ -81,28 +83,37 @@ for file in files:
                     finalScore = finalScore + 10 * score
                 totalWeight = totalWeight + 10
 
+                #check if NER data is present
                 if "STANFORD_NER" in data:
                     if "MEASUREMENT" in data["STANFORD_NER"][0]:
                         score = 0.5
-                        for m in data["STANFORD_NER"][0]["MEASUREMENT"]:
-                            Measurements+=m+","
-                        Measurements=Measurements[:-1]
+                        Measurements=",".join(data["STANFORD_NER"][0]["MEASUREMENT"])
+                        MeasurementsUnits = ''.join([i for i in Measurements if not i.isdigit()])
+                        MeasurementUnitsArray=list(set(MeasurementsUnits.split(",")))
+                        MeasurementUnitsArray = [x for x in MeasurementUnitsArray if x != '']
+                        MeasurementsUnits=",".join(MeasurementUnitsArray)
+
                     if "UNIT" in data["STANFORD_NER"][0]:
                         score = 1.0
-                        for m in data["STANFORD_NER"][0]["UNIT"]:
-                            Units+=m+","
-                        Units=Units[:-1]
+                        Units=",".join(data["STANFORD_NER"][0]["UNIT"])
+                        if MeasurementsUnits != "N/A":
+                            Units=Units+","+MeasurementsUnits
+                            Units=",".join(list(set(Units.split(","))))
+                    else:
+                        Units=MeasurementsUnits
                     finalScore = finalScore + 10 * score
+
                 totalWeight = totalWeight + 10
 
+                #check if grobid and scholar data is present
                 if "grobid_tags" in data:
                     score = 0.25
-                    #print "### Grobid"
                     if "grobid:header_Authors" in data["grobid_tags"]:
                         score = 0.5
                         Grobid_authors=data["grobid_tags"]["grobid:header_Authors"]
+                        Grobid_authors=Grobid_authors
                         Grobid_authors=Grobid_authors.encode('ascii', 'ignore')
-                        #print '#######Author Present######'
+                        Grobid_authors = re.sub("^\d+\s|\s\d+\s|\s\d+$", ",", Grobid_authors)
                         if "scholar_tags" in data:
                             for i in range(0,len(data["scholar_tags"])):
                                 if("Cluster ID" in data["scholar_tags"][i] and "URL" in data["scholar_tags"][i] and "Title" in data["scholar_tags"][i] and "Citations list" in data["scholar_tags"][i]):
@@ -114,8 +125,8 @@ for file in files:
                     finalScore = finalScore + 10 * score
                 totalWeight = totalWeight + 10
 
+                #check if geolocation information is present
                 if "geo_name" in data:
-                    #print data["geo_name"]
                     if data["geo_name"] == "N/A":
                         score = 0
                     else:
@@ -130,8 +141,9 @@ for file in files:
                 if "geo_lat" in data:
                     Geographical_Latitude=data["geo_lat"]
 
+
+                #check if SWEET data is present
                 if "SWEET" in data:
-                    #print "### SWEET present"
                     score = 1
                     if("REPRESENTATION" in data["SWEET"][0]):
                         Representation=",".join(data["SWEET"][0]["REPRESENTATION"])
@@ -170,6 +182,8 @@ for file in files:
                 if "content" in data:
                     content=data["content"]
 
+
+                #add the meta data fields from Tika
                 if "meta-tags" in data:
                     if "Content-Type" in data["meta-tags"][0]:
                         ContentType=data["meta-tags"][0]["Content-Type"]
