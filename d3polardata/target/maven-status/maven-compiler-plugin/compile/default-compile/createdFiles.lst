@@ -1,9 +1,0 @@
-com\polarenrichment\dto\WordCloudDTO.class
-com\polarenrichment\solr\QuerySolr.class
-com\polarenrichment\dto\ParentDTO.class
-com\polarenrichment\rest\RestfulService.class
-com\polarenrichment\dto\BarChartDTO.class
-com\polarenrichment\dto\ChildDTO.class
-com\polarenrichment\dto\LineChartDTO.class
-com\polarenrichment\rest\CORSFilter.class
-com\polarenrichment\dto\RootParentDTO.class
